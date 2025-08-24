@@ -12,8 +12,8 @@ class AppColors {
   static const Color accent = Color(0xFFE74C3C); // Red accent color
   
   // Gradient Colors
-  static const Color gradientStart = Color(0xFF667EEA);
-  static const Color gradientEnd = Color(0xFF764BA2);
+  static const Color gradientStart = Color(0xFF4A5568); // Darker blue-gray
+  static const Color gradientEnd = Color(0xFF2D3748);   // Even darker blue-gray
   static const Color gradientBlueStart = Color(0xFF4A90E2);
   static const Color gradientBlueEnd = Color(0xFF357ABD);
   static const Color gradientPurpleStart = Color(0xFF9B59B6);

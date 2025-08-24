@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({super.key});
@@ -52,23 +53,36 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
     },
   ];
 
+  String _selectedFilter = 'All';
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Assignments'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          'Assignments',
+          style: GoogleFonts.poppins(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF4B6CB7),
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Color(0xFF4B6CB7)),
             onPressed: () {
-              Navigator.pushNamed(context, '/search');
+              _showSearchDialog();
             },
           ),
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.more_vert, color: Color(0xFF4B6CB7)),
             onPressed: () {
-              // TODO: Implement filter functionality
+              _showChatOptions();
             },
           ),
         ],
@@ -81,14 +95,14 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [AppColors.gradientPurpleStart, AppColors.gradientPurpleEnd],
+                colors: [Color(0xFF4B6CB7), Color(0xFF182848)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryPurple.withOpacity(0.3),
+                  color: const Color(0xFF4B6CB7).withOpacity(0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -115,34 +129,80 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Assignment Tracker',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        _searchQuery.isNotEmpty ? 'Search Results' : 'Track Your Progress',
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        '${_assignments.where((a) => !a['completed']).length} pending assignments',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        _searchQuery.isNotEmpty 
+                            ? '${_getFilteredAssignments().length} assignments found for "$_searchQuery"'
+                            : '${_assignments.length} assignments • ${_assignments.where((a) => a['completed']).length} completed',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
                           color: Colors.white.withOpacity(0.9),
                         ),
                       ),
                     ],
                   ),
                 ),
+                if (_searchQuery.isNotEmpty)
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                        _searchController.clear();
+                      });
+                    },
+                    icon: const Icon(Icons.clear, color: Colors.white),
+                    tooltip: 'Clear Search',
+                  ),
               ],
             ),
           ),
-          
+
+          // Filter tabs
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildFilterTab('All', _selectedFilter == 'All'),
+                ),
+                Expanded(
+                  child: _buildFilterTab('Pending', _selectedFilter == 'Pending'),
+                ),
+                Expanded(
+                  child: _buildFilterTab('Completed', _selectedFilter == 'Completed'),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
           // Assignments list
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: _assignments.length,
+              itemCount: _getFilteredAssignments().length,
               itemBuilder: (context, index) {
-                final assignment = _assignments[index];
-                return _buildAssignmentCard(assignment, index);
+                final assignment = _getFilteredAssignments()[index];
+                return _buildAssignmentCard(assignment);
               },
             ),
           ),
@@ -152,7 +212,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
         onPressed: () {
           _showAddAssignmentDialog();
         },
-        backgroundColor: AppColors.primaryPurple,
+        backgroundColor: const Color(0xFF4B6CB7),
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -162,7 +222,33 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
     );
   }
 
-  Widget _buildAssignmentCard(Map<String, dynamic> assignment, int index) {
+  Widget _buildFilterTab(String title, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedFilter = title;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF4B6CB7) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : Colors.grey[600],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssignmentCard(Map<String, dynamic> assignment) {
     final isCompleted = assignment['completed'] as bool;
     final priority = assignment['priority'] as String;
     final dueDate = assignment['dueDate'] as DateTime;
@@ -425,18 +511,183 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
   }
 
   void _showAddAssignmentDialog() {
-    showDialog(
+    Navigator.pushNamed(context, '/add-assignment');
+  }
+
+  void _showChatOptions() {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add New Assignment'),
-        content: const Text('Assignment creation feature coming soon!'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
-        ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.search, color: Color(0xFF4B6CB7)),
+              title: Text(
+                'Search Assignments',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _showSearchDialog();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications, color: Color(0xFF4B6CB7)),
+              title: Text(
+                'Notification Settings',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Implement notification settings
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.archive, color: Color(0xFF4B6CB7)),
+              title: Text(
+                'Archived Assignments',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Implement archived assignments
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
+  }
+
+  void _showSearchDialog() {
+    _searchController.text = _searchQuery;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Search Assignments',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search by title, subject, or description...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onSubmitted: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              if (_searchQuery.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                        _searchController.clear();
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(Icons.clear, size: 16),
+                    label: const Text('Clear Search'),
+                  ),
+                ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.inter(color: Colors.grey[600]),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _searchQuery = _searchController.text;
+                });
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4B6CB7),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Search'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  List<Map<String, dynamic>> _getFilteredAssignments() {
+    List<Map<String, dynamic>> filteredAssignments = _assignments;
+    
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      filteredAssignments = filteredAssignments.where((assignment) {
+        final title = assignment['title'].toString().toLowerCase();
+        final subject = assignment['subject'].toString().toLowerCase();
+        final description = assignment['description'].toString().toLowerCase();
+        final query = _searchQuery.toLowerCase();
+        
+        return title.contains(query) || 
+               subject.contains(query) || 
+               description.contains(query);
+      }).toList();
+    }
+    
+    // Apply status filter
+    if (_selectedFilter == 'All') {
+      return filteredAssignments;
+    } else if (_selectedFilter == 'Pending') {
+      return filteredAssignments.where((a) => !a['completed']).toList();
+    } else if (_selectedFilter == 'Completed') {
+      return filteredAssignments.where((a) => a['completed']).toList();
+    }
+    return filteredAssignments;
   }
 }

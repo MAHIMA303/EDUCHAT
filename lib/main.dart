@@ -17,6 +17,8 @@ import 'screens/notifications_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/resource_library_screen.dart';
 import 'screens/multi_language_settings_screen.dart';
+import 'screens/group_management_screen.dart';
+import 'screens/ai_tutor_screen.dart';
 
 void main() {
   runApp(const EduChatBotApp());

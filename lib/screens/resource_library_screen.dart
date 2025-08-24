@@ -9,353 +9,415 @@ class ResourceLibraryScreen extends StatefulWidget {
   State<ResourceLibraryScreen> createState() => _ResourceLibraryScreenState();
 }
 
-class _ResourceLibraryScreenState extends State<ResourceLibraryScreen> {
-  int _selectedCategory = 0;
-  final List<String> _categories = ['All', 'Notes', 'Documents', 'Saved Chats', 'Videos'];
+class _ResourceLibraryScreenState extends State<ResourceLibraryScreen> with TickerProviderStateMixin {
+  late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
   
   final List<Map<String, dynamic>> _resources = [
     {
-      'id': '1',
-      'title': 'Calculus Chapter 1 Notes',
-      'category': 'Notes',
+      'name': 'Mathematics Formulas.pdf',
+      'type': 'PDF',
       'subject': 'Mathematics',
-      'fileSize': '2.4 MB',
-      'fileType': 'PDF',
-      'downloadCount': 156,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 3)),
-      'icon': Icons.description,
-      'color': AppColors.primary,
-      'isDownloaded': false,
+      'size': '2.3 MB',
+      'uploadDate': '2024-01-15',
+      'icon': Icons.picture_as_pdf,
+      'color': Colors.red,
     },
     {
-      'id': '2',
-      'title': 'Physics Formula Sheet',
-      'category': 'Documents',
+      'name': 'Physics Lab Report.docx',
+      'type': 'Document',
       'subject': 'Physics',
-      'fileSize': '1.8 MB',
-      'fileType': 'PDF',
-      'downloadCount': 89,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 5)),
-      'icon': Icons.science,
-      'color': AppColors.warning,
-      'isDownloaded': true,
+      'size': '1.8 MB',
+      'uploadDate': '2024-01-14',
+      'icon': Icons.description,
+      'color': Colors.blue,
     },
     {
-      'id': '3',
-      'title': 'Chemistry Lab Safety Guide',
-      'category': 'Documents',
+      'name': 'Chemistry Notes.pdf',
+      'type': 'PDF',
       'subject': 'Chemistry',
-      'fileSize': '3.2 MB',
-      'fileType': 'PDF',
-      'downloadCount': 234,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 7)),
-      'icon': Icons.science,
-      'color': AppColors.warning,
-      'isDownloaded': false,
+      'size': '3.1 MB',
+      'uploadDate': '2024-01-13',
+      'icon': Icons.picture_as_pdf,
+      'color': Colors.red,
     },
     {
-      'id': '4',
-      'title': 'AI Chat: Calculus Derivatives',
-      'category': 'Saved Chats',
-      'subject': 'Mathematics',
-      'fileSize': '45 KB',
-      'fileType': 'Chat',
-      'downloadCount': 12,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 1)),
-      'icon': Icons.chat_bubble,
-      'color': AppColors.info,
-      'isDownloaded': false,
-    },
-    {
-      'id': '5',
-      'title': 'Biology Cell Division Video',
-      'category': 'Videos',
-      'subject': 'Biology',
-      'fileSize': '15.7 MB',
-      'fileType': 'MP4',
-      'downloadCount': 67,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 10)),
-      'icon': Icons.video_library,
-      'color': AppColors.accent,
-      'isDownloaded': false,
-    },
-    {
-      'id': '6',
-      'title': 'English Essay Writing Tips',
-      'category': 'Notes',
+      'name': 'English Essay.pdf',
+      'type': 'PDF',
       'subject': 'English',
-      'fileSize': '1.1 MB',
-      'fileType': 'PDF',
-      'downloadCount': 198,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 2)),
-      'icon': Icons.description,
-      'color': AppColors.primary,
-      'isDownloaded': false,
+      'size': '1.2 MB',
+      'uploadDate': '2024-01-12',
+      'icon': Icons.picture_as_pdf,
+      'color': Colors.red,
     },
     {
-      'id': '7',
-      'title': 'History Timeline Reference',
-      'category': 'Documents',
+      'name': 'History Timeline.pptx',
+      'type': 'Presentation',
       'subject': 'History',
-      'fileSize': '4.5 MB',
-      'fileType': 'PDF',
-      'downloadCount': 123,
-      'uploadDate': DateTime.now().subtract(const Duration(days: 15)),
-      'icon': Icons.science,
-      'color': AppColors.warning,
-      'isDownloaded': false,
+      'size': '5.2 MB',
+      'uploadDate': '2024-01-11',
+      'icon': Icons.slideshow,
+      'color': Colors.orange,
     },
     {
-      'id': '8',
-      'title': 'AI Chat: Physics Problem Solving',
-      'category': 'Saved Chats',
-      'subject': 'Physics',
-      'fileSize': '32 KB',
-      'fileType': 'Chat',
-      'downloadCount': 8,
-      'uploadDate': DateTime.now().subtract(const Duration(hours: 6)),
-      'icon': Icons.chat_bubble,
-      'color': AppColors.info,
-      'isDownloaded': false,
+      'name': 'Biology Study Guide.pdf',
+      'type': 'PDF',
+      'subject': 'Biology',
+      'size': '4.7 MB',
+      'uploadDate': '2024-01-10',
+      'icon': Icons.picture_as_pdf,
+      'color': Colors.red,
     },
   ];
 
-  List<Map<String, dynamic>> get _filteredResources {
-    if (_selectedCategory == 0) {
-      return _resources;
-    }
-    final category = _categories[_selectedCategory];
-    return _resources.where((resource) => resource['category'] == category).toList();
+  final List<String> _categories = ['All', 'PDFs', 'Documents', 'Presentations', 'Images', 'Videos'];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _categories.length, vsync: this);
   }
 
-  void _onCategoryTap(int index) {
-    setState(() {
-      _selectedCategory = index;
-    });
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
-  Future<void> _downloadResource(Map<String, dynamic> resource) async {
-    // TODO: Implement actual download functionality
-    setState(() {
-      resource['isDownloaded'] = true;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${resource['title']} downloaded successfully!'),
-        backgroundColor: AppColors.success,
-        action: SnackBarAction(
-          label: 'Open',
-          textColor: Colors.white,
-          onPressed: () {
-            // TODO: Open downloaded file
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Open file functionality coming soon!'),
-                backgroundColor: AppColors.info,
+  void _showUploadDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
               ),
-            );
-          },
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Upload Resource',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4B6CB7).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.upload_file,
+                  color: Color(0xFF4B6CB7),
+                ),
+              ),
+              title: Text(
+                'Choose File',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
+              subtitle: const Text('Select file from device'),
+              onTap: () {
+                Navigator.pop(context);
+                _uploadFile();
+              },
+            ),
+            ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4B6CB7).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: Color(0xFF4B6CB7),
+                ),
+              ),
+              title: Text(
+                'Take Photo',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
+              subtitle: const Text('Capture document or image'),
+              onTap: () {
+                Navigator.pop(context);
+                _takePhoto();
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
   }
 
-  void _deleteResource(String resourceId) {
-    setState(() {
-      _resources.removeWhere((resource) => resource['id'] == resourceId);
-    });
-    
+  void _uploadFile() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Resource deleted'),
-        backgroundColor: AppColors.error,
+        content: Text('File upload feature coming soon!'),
+        backgroundColor: Color(0xFF4B6CB7),
       ),
     );
   }
 
-  void _shareResource(Map<String, dynamic> resource) {
-    // TODO: Implement share functionality
+  void _takePhoto() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Sharing ${resource['title']}...'),
-        backgroundColor: AppColors.info,
+      const SnackBar(
+        content: Text('Camera feature coming soon!'),
+        backgroundColor: Color(0xFF4B6CB7),
       ),
     );
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-    
-    if (difference.inDays == 0) {
-      return 'Today';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inDays < 30) {
-      final weeks = (difference.inDays / 7).floor();
-      return '${weeks}w ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
+  void _showStorageInfo() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Storage Information',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Where are your resources stored?',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '• Local Device Storage: Files are saved on your device\n'
+              '• Cloud Backup: Automatic backup to secure cloud storage\n'
+              '• Offline Access: Available even without internet\n'
+              '• Sync Across Devices: Access from any device',
+              style: GoogleFonts.inter(fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4B6CB7).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.security,
+                    color: Color(0xFF4B6CB7),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Your files are encrypted and secure',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF4B6CB7),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Got it',
+              style: GoogleFonts.inter(color: const Color(0xFF4B6CB7)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
           'Resource Library',
           style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF4B6CB7),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppColors.primary),
-            onPressed: () {
-              // TODO: Implement search functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Search functionality coming soon!'),
-                  backgroundColor: AppColors.info,
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add, color: AppColors.primary),
-            onPressed: () {
-              // TODO: Implement upload functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Upload functionality coming soon!'),
-                  backgroundColor: AppColors.info,
-                ),
-              );
-            },
+            icon: const Icon(Icons.info_outline, color: Color(0xFF4B6CB7)),
+            onPressed: _showStorageInfo,
           ),
         ],
       ),
       body: Column(
         children: [
-          // Category Filter
+          // Search Bar
           Container(
-            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            child: Container(
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Row(
-              children: _categories.asMap().entries.map((entry) {
-                final index = entry.key;
-                final category = entry.value;
-                final isSelected = index == _selectedCategory;
-                
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => _onCategoryTap(index),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        category,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search resources...',
+                  hintStyle: GoogleFonts.inter(
+                    color: Colors.grey[500],
+                    fontSize: 16,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.grey[600],
+                    size: 24,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                ),
+                style: GoogleFonts.inter(fontSize: 16),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
+
+          // Category Tabs
+          Container(
+            height: 50,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: const Color(0xFF4B6CB7),
+              ),
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey[600],
+              labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              tabs: _categories.map((category) => Tab(text: category)).toList(),
             ),
           ),
+
+          const SizedBox(height: 20),
           
           // Resources List
           Expanded(
-            child: _filteredResources.isEmpty
-                ? Center(
+            child: TabBarView(
+              controller: _tabController,
+              children: _categories.map((category) {
+                return _buildResourcesList(category);
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showUploadDialog,
+        backgroundColor: const Color(0xFF4B6CB7),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 28,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResourcesList(String category) {
+    List<Map<String, dynamic>> filteredResources = _resources;
+    
+    if (category != 'All') {
+      filteredResources = _resources.where((resource) {
+        if (category == 'PDFs') return resource['type'] == 'PDF';
+        if (category == 'Documents') return resource['type'] == 'Document';
+        if (category == 'Presentations') return resource['type'] == 'Presentation';
+        if (category == 'Images') return resource['type'] == 'Image';
+        if (category == 'Videos') return resource['type'] == 'Video';
+        return true;
+      }).toList();
+    }
+
+    if (filteredResources.isEmpty) {
+      return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.folder_open,
                           size: 64,
-                          color: AppColors.textSecondary.withValues(alpha: 0.3),
+              color: Colors.grey[400],
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No resources found',
-                          style: GoogleFonts.inter(
+              style: GoogleFonts.poppins(
                             fontSize: 18,
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600],
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Try selecting a different category',
+              'Upload your first resource',
                           style: GoogleFonts.inter(
                             fontSize: 14,
-                            color: AppColors.textSecondary.withValues(alpha: 0.7),
+                color: Colors.grey[500],
                           ),
                         ),
                       ],
                     ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _filteredResources.length,
-                    itemBuilder: (context, index) {
-                      final resource = _filteredResources[index];
-                      
-                      return Dismissible(
-                        key: Key(resource['id']),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          margin: const EdgeInsets.only(bottom: 12),
+      );
+    }
+
+    return ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                            color: AppColors.error,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(
-                                Icons.delete,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ],
-                          ),
-                        ),
-                        onDismissed: (direction) {
-                          _deleteResource(resource['id']);
-                        },
-                        child: Container(
+      itemCount: filteredResources.length,
+      itemBuilder: (context, index) {
+        final resource = filteredResources[index];
+        return Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 8,
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
                                 offset: const Offset(0, 2),
                               ),
                             ],
@@ -363,11 +425,11 @@ class _ResourceLibraryScreenState extends State<ResourceLibraryScreen> {
                           child: ListTile(
                             contentPadding: const EdgeInsets.all(16),
                             leading: Container(
-                              width: 48,
-                              height: 48,
+              width: 50,
+              height: 50,
                               decoration: BoxDecoration(
-                                color: resource['color'].withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
+                color: resource['color'].withOpacity(0.1),
+                borderRadius: BorderRadius.circular(25),
                               ),
                               child: Icon(
                                 resource['icon'],
@@ -376,193 +438,83 @@ class _ResourceLibraryScreenState extends State<ResourceLibraryScreen> {
                               ),
                             ),
                             title: Text(
-                              resource['title'],
-                              style: GoogleFonts.inter(
+              resource['name'],
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                color: Colors.black87,
                               ),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: resource['color'].withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        resource['subject'],
-                                        style: GoogleFonts.inter(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600,
-                                          color: resource['color'],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
                                     Text(
-                                      resource['fileType'],
+                  '${resource['subject']} • ${resource['size']}',
                                       style: GoogleFonts.inter(
-                                        fontSize: 10,
-                                        color: AppColors.textSecondary,
-                                        fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                                    Text(
+                  'Uploaded: ${resource['uploadDate']}',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                    color: Colors.grey[500],
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.download,
-                                      size: 14,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${resource['downloadCount']}',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Icon(
-                                      Icons.access_time,
-                                      size: 14,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      _formatDate(resource['uploadDate']),
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  resource['fileSize'],
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                if (resource['isDownloaded'])
-                                  Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.success,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                      size: 12,
-                                    ),
-                                  )
-                                else
-                                  IconButton(
-                                    onPressed: () => _downloadResource(resource),
-                                    icon: const Icon(
-                                      Icons.download,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
-                                  ),
-                              ],
-                            ),
+            trailing: PopupMenuButton(
+              icon: const Icon(Icons.more_vert, color: Colors.grey),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: const Text('Download'),
                             onTap: () {
-                              if (resource['isDownloaded']) {
-                                // TODO: Open downloaded file
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Open file functionality coming soon!'),
-                                    backgroundColor: AppColors.info,
-                                  ),
-                                );
-                              } else {
-                                _downloadResource(resource);
-                              }
-                            },
-                            onLongPress: () {
-                              showModalBottomSheet(
-                                context: context,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.surface,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20),
-                                      topRight: Radius.circular(20),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 4,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.border,
-                                          borderRadius: BorderRadius.circular(2),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      ListTile(
-                                        leading: const Icon(Icons.download, color: AppColors.primary),
-                                        title: const Text('Download'),
+                      SnackBar(
+                        content: Text('Downloading ${resource['name']}'),
+                        backgroundColor: const Color(0xFF4B6CB7),
+                      ),
+                    );
+                  },
+                ),
+                PopupMenuItem(
+                  child: const Text('Share'),
                                         onTap: () {
-                                          Navigator.pop(context);
-                                          _downloadResource(resource);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(Icons.share, color: AppColors.info),
-                                        title: const Text('Share'),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Sharing ${resource['name']}'),
+                        backgroundColor: const Color(0xFF4B6CB7),
+                      ),
+                    );
+                  },
+                ),
+                PopupMenuItem(
+                  child: const Text('Delete'),
                                         onTap: () {
-                                          Navigator.pop(context);
-                                          _shareResource(resource);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(Icons.delete, color: AppColors.error),
-                                        title: const Text('Delete'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          _deleteResource(resource['id']);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Deleting ${resource['name']}'),
+                        backgroundColor: const Color(0xFF4B6CB7),
+                      ),
+                    );
                                         },
                                       ),
                                     ],
                                   ),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Opening ${resource['name']}'),
+                  backgroundColor: const Color(0xFF4B6CB7),
                                 ),
                               );
                             },
-                          ),
                         ),
                       );
                     },
-                  ),
-          ),
-        ],
-      ),
     );
   }
 }
