@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Colors - Blue and Purple Theme
+  static const Color primary = Color(0xFF4A90E2); // Main primary color
   static const Color primaryBlue = Color(0xFF4A90E2);
   static const Color primaryPurple = Color(0xFF9B59B6);
   static const Color secondaryBlue = Color(0xFF5DADE2);
   static const Color secondaryPurple = Color(0xFF8E44AD);
+  
+  // Accent Colors
+  static const Color accent = Color(0xFFE74C3C); // Red accent color
   
   // Gradient Colors
   static const Color gradientStart = Color(0xFF667EEA);
@@ -19,6 +23,9 @@ class AppColors {
   static const Color background = Color(0xFFFAFAFA);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color cardBackground = Color(0xFFFFFFFF);
+  
+  // Border Colors
+  static const Color border = Color(0xFFE9ECEF); // Light border color
   
   // Text Colors
   static const Color textPrimary = Color(0xFF2C3E50);

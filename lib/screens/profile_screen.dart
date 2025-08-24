@@ -184,7 +184,7 @@ class ProfileScreen extends StatelessWidget {
               Icons.edit,
               AppColors.primaryBlue,
               () {
-                // TODO: Implement edit profile
+                _showEditProfileDialog(context);
               },
               0,
             ),
@@ -226,7 +226,7 @@ class ProfileScreen extends StatelessWidget {
               Icons.help_outline,
               AppColors.info,
               () {
-                // TODO: Implement help & support
+                _showHelpSupportDialog(context);
               },
               2,
             ),
@@ -349,6 +349,46 @@ class ProfileScreen extends StatelessWidget {
           size: 16,
         ),
         onTap: onTap,
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: const Text('This feature is under development.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showHelpSupportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Help & Support'),
+        content: const Text('This feature is under development.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

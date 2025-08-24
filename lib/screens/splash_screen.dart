@@ -107,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   
                   // Tagline
                   Text(
-                    'AI-Powered Learning Assistant',
+                    'Your AI Study Buddy',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white.withOpacity(0.9),
                       fontWeight: FontWeight.w500,

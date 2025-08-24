@@ -8,6 +8,15 @@ import 'screens/chat_screen.dart';
 import 'screens/assignments_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/forgot_password_screen.dart';
+import 'screens/chat_detail_screen.dart';
+import 'screens/search_screen.dart';
+import 'screens/add_assignment_screen.dart';
+import 'screens/assignment_detail_screen.dart';
+import 'screens/notifications_screen.dart';
+import 'screens/progress_screen.dart';
+import 'screens/resource_library_screen.dart';
+import 'screens/multi_language_settings_screen.dart';
 
 void main() {
   runApp(const EduChatBotApp());
@@ -34,6 +43,18 @@ class EduChatBotApp extends StatelessWidget {
         '/assignments': (context) => const AssignmentsScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/chat-detail': (context) => const ChatDetailScreen(chatTitle: 'Chat'),
+        '/search': (context) => const SearchScreen(),
+        '/add-assignment': (context) => const AddAssignmentScreen(),
+        '/assignment-detail': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+          return AssignmentDetailScreen(assignment: args ?? {});
+        },
+        '/notifications': (context) => const NotificationsScreen(),
+        '/progress': (context) => const ProgressScreen(),
+        '/resource-library': (context) => const ResourceLibraryScreen(),
+        '/language-settings': (context) => const MultiLanguageSettingsScreen(),
       },
     );
   }

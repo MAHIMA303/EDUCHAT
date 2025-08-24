@@ -15,20 +15,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingPage> _pages = [
     OnboardingPage(
-      title: 'Ask Doubts Instantly',
+      title: 'Chat with AI Tutors',
       subtitle: 'Get instant answers to your academic questions with our AI-powered chatbot',
       illustration: 'assets/animations/chat_question.json',
       icon: Icons.chat_bubble_outline,
     ),
     OnboardingPage(
-      title: 'Learn Smart, Not Hard',
-      subtitle: 'Personalized explanations and step-by-step solutions to help you understand better',
+      title: 'Track Assignments Easily',
+      subtitle: 'Manage your academic tasks with our intuitive assignment tracking system',
       illustration: 'assets/animations/learning_ai.json',
-      icon: Icons.lightbulb_outline,
+      icon: Icons.calendar_today,
     ),
     OnboardingPage(
-      title: 'Track Your Progress',
-      subtitle: 'Monitor your learning journey with detailed analytics and assignment tracking',
+      title: 'Boost Your Learning',
+      subtitle: 'Monitor your progress and improve your study habits with detailed analytics',
       illustration: 'assets/animations/progress_tracking.json',
       icon: Icons.trending_up,
     ),

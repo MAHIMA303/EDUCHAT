@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../constants/app_colors.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -168,7 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           },
                         ),
                         
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
                         
                         // Password Field
                         TextFormField(
@@ -230,6 +231,27 @@ class _AuthScreenState extends State<AuthScreen> {
                           },
                         ),
                         
+                        const SizedBox(height: 20),
+                        
+                        // Forgot Password Link
+                        if (_isLogin)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/forgot-password');
+                              },
+                              child: Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        
                         const SizedBox(height: 30),
                         
                         // Submit Button
@@ -255,7 +277,54 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
+                        
+                        // Social Login Section
+                        Column(
+                          children: [
+                            Text(
+                              'Or continue with',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                // Google Login
+                                _buildSocialLoginButton(
+                                  onPressed: () {
+                                    // TODO: Implement Google login
+                                  },
+                                  icon: 'assets/icons/google.svg',
+                                  label: 'Google',
+                                ),
+                                
+                                // Facebook Login
+                                _buildSocialLoginButton(
+                                  onPressed: () {
+                                    // TODO: Implement Facebook login
+                                  },
+                                  icon: 'assets/icons/facebook.svg',
+                                  label: 'Facebook',
+                                ),
+                                
+                                // Apple Login
+                                _buildSocialLoginButton(
+                                  onPressed: () {
+                                    // TODO: Implement Apple login
+                                  },
+                                  icon: 'assets/icons/apple.svg',
+                                  label: 'Apple',
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 30),
                         
                         // Toggle Auth Mode
                         TextButton(
@@ -304,6 +373,46 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
       ),
+    );
+  }
+  
+  Widget _buildSocialLoginButton({
+    required VoidCallback onPressed,
+    required String icon,
+    required String label,
+  }) {
+    return Column(
+      children: [
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: IconButton(
+            onPressed: onPressed,
+            icon: SvgPicture.asset(
+              icon,
+              width: 24,
+              height: 24,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.8),
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

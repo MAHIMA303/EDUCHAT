@@ -60,6 +60,12 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
         title: const Text('Assignments'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.pushNamed(context, '/search');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () {
               // TODO: Implement filter functionality
@@ -322,7 +328,24 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                         ),
                         Row(
                           children: [
-                            if (!isCompleted)
+                            if (!isCompleted) ...[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context, 
+                                    '/assignment-detail',
+                                    arguments: assignment,
+                                  );
+                                },
+                                child: Text(
+                                  'Submit Assignment',
+                                  style: TextStyle(
+                                    color: AppColors.accent,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
                               TextButton(
                                 onPressed: () {
                                   _toggleAssignmentStatus(assignment);
@@ -335,6 +358,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                                   ),
                                 ),
                               ),
+                            ],
                             if (isCompleted)
                               TextButton(
                                 onPressed: () {

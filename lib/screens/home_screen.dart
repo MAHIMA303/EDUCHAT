@@ -134,7 +134,7 @@ class ChatsTab extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // TODO: Implement search functionality
+              Navigator.pushNamed(context, '/search');
             },
           ),
         ],
