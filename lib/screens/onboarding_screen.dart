@@ -389,13 +389,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  _buildTaskItem('Math Assignment', 'Due in 2 days', false),
-                  _buildTaskItem('Physics Lab Report', 'Due in 5 days', false),
-                  _buildTaskItem('Chemistry Quiz', 'Completed', true),
-                  _buildTaskItem('English Essay', 'Due tomorrow', false),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildTaskItem('Math Assignment', 'Due in 2 days', false),
+                    _buildTaskItem('Physics Lab Report', 'Due in 5 days', false),
+                    _buildTaskItem('Chemistry Quiz', 'Completed', true),
+                    _buildTaskItem('English Essay', 'Due tomorrow', false),
+                  ],
+                ),
               ),
             ),
           ),

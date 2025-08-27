@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import '../services/calendar_service.dart';
 
 class AssignmentDetailScreen extends StatefulWidget {
   final Map<String, dynamic> assignment;
@@ -423,7 +425,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
             
             const SizedBox(height: 24),
             
-            // Description
+            // Add to Calendar & Description
             if (assignment['description'] != null && assignment['description'].isNotEmpty) ...[
               Text(
                 'Description',
@@ -454,6 +456,58 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                     fontSize: 16,
                     color: AppColors.textPrimary,
                     height: 1.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            if (!kIsWeb && dueDate != null && !_isCompleted) ...[
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    // Temporarily show a message that calendar is not available
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Calendar functionality coming soon!'),
+                        backgroundColor: AppColors.warning,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                    
+                    // Keep the original functionality commented for future use
+                    // final added = await CalendarService().addAssignmentToCalendar(
+                    //   title: assignment['title'] ?? 'Assignment',
+                    //   description: assignment['description'],
+                    //   start: dueDate!,
+                    //   end: dueDate!.add(const Duration(hours: 1)),
+                    //   reminderOffset: const Duration(hours: 2),
+                    // );
+                    // if (!mounted) return;
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(
+                    //     content: Text(added ? 'Added to your calendar' : 'Could not add to calendar'),
+                    //         backgroundColor: added ? AppColors.success : AppColors.error,
+                    //   ),
+                    // );
+                  },
+                  icon: const Icon(Icons.event_available),
+                  label: Text(
+                    'Add to Calendar',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.primary),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/points_service.dart';
+import '../widgets/offline_banner.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({super.key});
@@ -56,6 +58,9 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
   String _selectedFilter = 'All';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  final PointsService _points = PointsService();
+  final String _currentUserId = 'u_current';
+  final String _currentUsername = 'John Doe';
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +94,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
       ),
       body: Column(
         children: [
+          const OfflineBanner(),
           // Header section
           Container(
             margin: const EdgeInsets.all(20),
@@ -412,7 +418,10 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                             ),
                           ],
                         ),
-                        Row(
+                        // Use Wrap to prevent overflow and make buttons stack on smaller screens
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
                           children: [
                             if (!isCompleted) ...[
                               TextButton(
@@ -431,10 +440,14 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  final before = assignment['completed'] as bool;
                                   _toggleAssignmentStatus(assignment);
+                                  final after = assignment['completed'] as bool;
+                                  if (!before && after) {
+                                    await _points.addPoints(userId: _currentUserId, username: _currentUsername, delta: 10);
+                                  }
                                 },
                                 child: Text(
                                   'Mark Complete',
@@ -447,7 +460,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                             ],
                             if (isCompleted)
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   _toggleAssignmentStatus(assignment);
                                 },
                                 child: Text(

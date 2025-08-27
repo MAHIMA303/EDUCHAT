@@ -198,9 +198,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   Widget _buildLoginTab() {
     return Padding(
       padding: const EdgeInsets.all(20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
                       children: [
                         // Email Field
                         TextFormField(
@@ -329,8 +330,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
+      ),
       ),
     );
   }
@@ -338,9 +341,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   Widget _buildSignupTab() {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Form(
-        key: _formKey,
-        child: Column(
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
                           children: [
             // Name Field
             TextFormField(
@@ -484,9 +488,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
             // Social Login
             _buildSocialLoginSection(),
+            const SizedBox(height: 8),
                       ],
                     ),
                   ),
+      ),
     );
   }
 

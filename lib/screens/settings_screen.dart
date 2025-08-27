@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart';
+// import 'package:firebase_auth/firebase_auth.dart'; // Temporarily disabled
+import '../services/role_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +18,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
+  bool _isTeacher = false;
+  bool _roleLoaded = false;
 
   final List<String> _languages = [
     'English',
@@ -50,6 +56,76 @@ class _SettingsScreenState extends State<SettingsScreen> {
             
             const SizedBox(height: 20),
             
+            if (_roleLoaded && (_isTeacher || kDebugMode)) ...[
+              _buildSectionHeader('Teacher', Icons.analytics, 100),
+              Card(
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBlue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.analytics,
+                      color: AppColors.primaryBlue,
+                      size: 24,
+                    ),
+                  ),
+                  title: Text(
+                    'Analytics Dashboard',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    kDebugMode ? 'Track student engagement metrics (Demo Mode)' : 'Track student engagement metrics',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => Navigator.pushNamed(context, '/analytics'),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryPurple.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      color: AppColors.primaryPurple,
+                      size: 24,
+                    ),
+                  ),
+                  title: Text(
+                    'Collaborative Whiteboard',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Real-time collaborative drawing and editing',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => Navigator.pushNamed(context, '/whiteboard'),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
             // Appearance section
             _buildSectionHeader('Appearance', Icons.palette, 0),
             _buildSwitchTile(
@@ -176,8 +252,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
             
             const SizedBox(height: 20),
             
+            // Integration section
+            _buildSectionHeader('Integrations', Icons.link, 12),
+            Card(
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.cloud_sync,
+                    color: AppColors.success,
+                    size: 24,
+                  ),
+                ),
+                title: Text(
+                  'External Services',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  'Connect Google Classroom, Drive, and LMS systems',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => Navigator.pushNamed(context, '/external-services'),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
             // Support section
-            _buildSectionHeader('Support', Icons.help, 12),
+            _buildSectionHeader('Support', Icons.help, 13),
             _buildActionTile(
               'Help Center',
               'Get help and find answers',
@@ -186,7 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               () {
                 // TODO: Open help center
               },
-              13,
+              14,
             ),
             
             const SizedBox(height: 16),
@@ -199,7 +311,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               () {
                 // TODO: Contact support
               },
-              14,
+              15,
             ),
             
             const SizedBox(height: 16),
@@ -212,18 +324,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
               () {
                 // TODO: Report bug
               },
-              15,
+              16,
             ),
             
             const SizedBox(height: 20),
             
             // About section
-            _buildSectionHeader('About', Icons.info, 16),
+            _buildSectionHeader('About', Icons.info, 17),
             _buildInfoTile(
               'App Version',
               '1.0.0',
               Icons.info,
-              17,
+              18,
             ),
             
             const SizedBox(height: 16),
@@ -232,11 +344,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Build Number',
               '2024.1.0',
               Icons.build,
-              18,
+              19,
             ),
             
             const SizedBox(height: 20),
             
+            // Encryption Demo Section
+            const SizedBox(height: 24),
+            Card(
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.security,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
+                title: Text(
+                  'Encryption Demo',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  'Test AES-256 message encryption',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.pushNamed(context, '/encryption-demo');
+                },
+              ),
+            ),
+
             // Logout button
             SizedBox(
               width: double.infinity,
@@ -273,6 +422,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRole();
+  }
+
+  Future<void> _loadRole() async {
+    try {
+      // final uid = FirebaseAuth.instance.currentUser?.uid ?? 'u_current';
+      final uid = 'u_current'; // Temporarily use static user ID
+      final role = await RoleService().getCurrentUserRole(uid);
+      if (!mounted) return;
+      setState(() {
+        _isTeacher = role == UserRole.teacher;
+        _roleLoaded = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isTeacher = false;
+        _roleLoaded = true;
+      });
+    }
   }
 
   Widget _buildSectionHeader(String title, IconData icon, int index) {

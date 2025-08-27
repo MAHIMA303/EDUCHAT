@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'chat_screen.dart';
 import 'assignments_screen.dart';
 import 'profile_screen.dart';
+import 'recommendations_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const ChatScreen(),
     const AssignmentsScreen(),
+    const RecommendationsScreen(),
     const ProfileScreen(),
   ];
 
@@ -76,7 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildNavItem(0, Icons.chat_bubble_outline, 'Chat'),
                 _buildNavItem(1, Icons.assignment_outlined, 'Assignments'),
-                _buildNavItem(2, Icons.person_outline, 'Profile'),
+                _buildNavItem(2, Icons.lightbulb_outline, 'Recommendations'),
+                _buildNavItem(3, Icons.person_outline, 'Profile'),
               ],
             ),
           ),
