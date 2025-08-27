@@ -1,0 +1,5 @@
+# Minimal working version for Python 3.13
+fastapi
+uvicorn
+python-multipart
+requests

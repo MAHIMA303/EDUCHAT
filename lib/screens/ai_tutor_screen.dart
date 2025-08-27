@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import 'ai_tutor_chat_screen.dart';
 
 class AITutorScreen extends StatefulWidget {
   const AITutorScreen({super.key});
@@ -461,10 +462,11 @@ class _AITutorScreenState extends State<AITutorScreen> {
   }
 
   void _startChat(Map<String, dynamic> tutor) {
-    Navigator.pushNamed(
+    Navigator.push(
       context,
-      '/chat-detail',
-      arguments: {'chatTitle': tutor['name']},
+      MaterialPageRoute(
+        builder: (context) => AITutorChatScreen(tutor: tutor),
+      ),
     );
   }
 

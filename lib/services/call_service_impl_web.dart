@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart'; // Temporarily disabled
 
 class CallSession {
   CallSession({required this.callId, required this.isCaller});
@@ -9,7 +9,7 @@ class CallSession {
 }
 
 class CallService {
-  CallService({FirebaseFirestore? firestore});
+  // CallService({FirebaseFirestore? firestore}); // Temporarily disabled
 
   Future<bool> isAvailable() async => false;
 

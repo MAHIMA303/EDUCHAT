@@ -29,7 +29,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
-  final AiService _aiService = AiService();
+  // AIService methods are static, no instance needed
   final EncryptionService _encryptionService = EncryptionService();
   PointsService? _pointsService;
   // CallService? _callService; // Temporarily disabled due to flutter_webrtc issues
@@ -47,7 +47,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       _pointsService = PointsService();
       // _callService = CallService(); // Temporarily disabled due to flutter_webrtc issues
   }
-    Permission.storage.request();
+    // Only request permissions on mobile platforms
+    if (!kIsWeb) {
+      Permission.storage.request();
+    }
 
     // Add initial AI message if this is AI Tutor
     if (widget.chatTitle == 'AI Tutor') {
@@ -130,7 +133,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       });
 
       try {
-        final aiResponse = await _aiService.getAiResponse(_messages, userMessage);
+        // Convert ChatMessage objects to simple maps for the API
+        final messageList = _messages.map((msg) => {
+          'text': msg.text,
+          'isUser': msg.isUser,
+          'timestamp': msg.timestamp.toIso8601String(),
+          'senderName': msg.senderName,
+        }).toList();
+        
+        final aiResponse = await AIService.getAiResponse(messageList, userMessage);
         
         final aiMessage = ChatMessage(
           id: const Uuid().v4(),
@@ -741,8 +752,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 child: TextField(
                   controller: _messageController,
                   focusNode: _focusNode,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Type a message...',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                       borderSide: BorderSide.none,

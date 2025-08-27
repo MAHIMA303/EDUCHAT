@@ -486,13 +486,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/chat-detail',
-            arguments: {'chatTitle': chat['title']},
-          );
-        },
+                 onTap: () {
+           Navigator.pushNamed(
+             context,
+             '/chat-detail',
+             arguments: {'chatTitle': chat['title']},
+           );
+         },
       ),
     );
   }
@@ -530,8 +530,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
                 Navigator.pushNamed(
                   context,
-                  '/chat-detail',
-                  arguments: {'chatTitle': 'AI Tutor'},
+                  '/ai-tutor',
                 );
               },
             ),

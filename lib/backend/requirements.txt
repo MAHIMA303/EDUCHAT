@@ -1,0 +1,30 @@
+# Core FastAPI and Haystack dependencies
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+
+# Haystack core - using compatible version
+farm-haystack==1.21.2
+
+# Document processing
+python-docx==0.8.11
+PyPDF2==3.0.1
+python-pptx==0.6.21
+
+# Vector database (using in-memory for simplicity)
+chromadb==0.4.15
+
+# Text processing
+nltk==3.8.1
+spacy==3.7.2
+
+# AI/ML - using versions compatible with farm-haystack 1.21.2
+torch==2.1.0
+transformers==4.32.1
+sentence-transformers==2.2.2
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+numpy==1.24.3
+pandas==2.0.3

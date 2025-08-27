@@ -10,18 +10,16 @@ import 'ai_service.dart';
 
 class RecommendationService {
   // final FirebaseFirestore? _db;
-  final AiService _aiService;
+  // AIService methods are static, no instance needed
   final http.Client _client;
   final String _apiKey;
 
   RecommendationService({
     // FirebaseFirestore? firestore,
-    AiService? aiService,
+    // AIService? aiService, // Not needed since methods are static
     http.Client? client,
     String? apiKey,
-  }) // : _db = kIsWeb ? null : (firestore ?? FirebaseFirestore.instance),
-       : _aiService = aiService ?? AiService(),
-       _client = client ?? http.Client(),
+  }) : _client = client ?? http.Client(),
        _apiKey = apiKey ?? const String.fromEnvironment('OPENAI_API_KEY', defaultValue: '');
 
   // Get recommendations for a user

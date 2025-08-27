@@ -92,10 +92,17 @@ class EduChatBotApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/chat-detail': (context) => const ChatDetailScreen(
-          chatTitle: 'Chat',
-          chatId: 'demo_chat',
-        ),
+        '/chat-detail': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          final chatTitle = args?['chatTitle'] ?? 'Chat';
+          final chatId = args?['chatId'] ?? 'demo_chat';
+          
+          return ChatDetailScreen(
+            chatTitle: chatTitle,
+            chatId: chatId,
+          );
+        },
+        // '/ai-tutor': (context) => const AITutorScreen(), // Removed - using direct AI Tutor chat instead
         '/search': (context) => const SearchScreen(),
         '/create-group': (context) => const CreateGroupScreen(),
         '/add-assignment': (context) => const AddAssignmentScreen(),
